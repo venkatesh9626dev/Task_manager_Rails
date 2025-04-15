@@ -1,0 +1,18 @@
+current directory: C:/Users/VenkateshSivakumar/Desktop/Ruby_on_Rails/Task_Manangement/vendor/bundle/ruby/3.3.0/gems/nio4r-2.7.4/ext/nio4r
+C:/Ruby33-x64/bin/ruby.exe extconf.rb
+
+current directory: C:/Users/VenkateshSivakumar/Desktop/Ruby_on_Rails/Task_Manangement/vendor/bundle/ruby/3.3.0/gems/nio4r-2.7.4/ext/nio4r
+make DESTDIR\= sitearchdir\=./.gem.20250415-368-2xbrql sitelibdir\=./.gem.20250415-368-2xbrql clean
+make: *** No rule to make target 'clean'.  Stop.
+
+current directory: C:/Users/VenkateshSivakumar/Desktop/Ruby_on_Rails/Task_Manangement/vendor/bundle/ruby/3.3.0/gems/nio4r-2.7.4/ext/nio4r
+make DESTDIR\= sitearchdir\=./.gem.20250415-368-2xbrql sitelibdir\=./.gem.20250415-368-2xbrql
+make: Nothing to be done for 'all'.
+
+current directory: C:/Users/VenkateshSivakumar/Desktop/Ruby_on_Rails/Task_Manangement/vendor/bundle/ruby/3.3.0/gems/nio4r-2.7.4/ext/nio4r
+make DESTDIR\= sitearchdir\=./.gem.20250415-368-2xbrql sitelibdir\=./.gem.20250415-368-2xbrql install
+make: Nothing to be done for 'install'.
+
+current directory: C:/Users/VenkateshSivakumar/Desktop/Ruby_on_Rails/Task_Manangement/vendor/bundle/ruby/3.3.0/gems/nio4r-2.7.4/ext/nio4r
+make DESTDIR\= sitearchdir\=./.gem.20250415-368-2xbrql sitelibdir\=./.gem.20250415-368-2xbrql clean
+make: *** No rule to make target 'clean'.  Stop.
