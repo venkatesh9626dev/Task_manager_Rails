@@ -3,7 +3,7 @@ class ApplicationController < ActionController::API
     # Active record validation error handling
 
     rescue_from ActiveRecord::RecordInvalid, with: :handle_record_invalid
-
+    rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
     # Jwt Error handling
     rescue_from JWT::DecodeError, JWT::ExpiredSignature, JWT::ImmatureSignature, JWT::VerificationError, JWT::InvalidIssuerError, JWT::InvalidAlgorithmError, JWT::MalformedJson, with: :handle_jwt_error
 
@@ -11,14 +11,21 @@ class ApplicationController < ActionController::API
         @status = "Error"
         @message = "Record Invalid: #{exception.message}"
         @data = nil
-        render json: shared/response, status: :unprocessable_entity
+        render json: shared/error_response, status: :unprocessable_entity
+    end
+
+    def record_not_found(exception)
+        @status = "Error"
+        @message = "Record Not Found: #{exception.message}"
+        @data = nil
+        render json: shared/error_response, status: :not_found
     end
 
     def handle_jwt_error(exception)
         @status = "Error"
         @message = "JWT Error: #{exception.message}"
         @data = nil
-        render json: shared/response, status: :unauthorized
+        render json: shared/error_response, status: :unauthorized
     end
 
     def authenticate_user
@@ -40,19 +47,8 @@ class ApplicationController < ActionController::API
           @status = "Error"
           @message = "Invalid Token"
           @data = nil
-          render json: "shared/response", status: :unauthorized
-        
-        else
-          return @current_user
+          render json: "shared/error_response", status: :unauthorized
         end
          
-    end
-
-    def response_is_error?
-        response.status >= 400 && response.status < 600
-    end
-
-    def format_error_response
-
     end
 end

@@ -1,6 +1,6 @@
 require 'securerandom'
 
-class Users::UsersController < ApplicationController
+class Admin::UsersController < ApplicationController
 
   before_action :authenticate_user
 
@@ -26,6 +26,25 @@ class Users::UsersController < ApplicationController
 
       render "users/create", status: :created
     end
+  end
+
+  def show
+    @user = User.find(params[:user_id])
+
+    @status = "Success"
+    @message = "Retrieved user successfully"
+
+    render "users/show", status: :created
+  end
+
+  def destroy
+    user = User.find(params[:id])
+    user.destroy
+
+    @status = "Success"
+    @message = "Deleted user successfully"
+
+    render json: "users/destroy" , status: :ok
   end
 
   def user_params
