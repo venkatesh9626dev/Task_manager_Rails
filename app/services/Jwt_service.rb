@@ -7,6 +7,7 @@ class JwtService
   end
 
   def self.decode(token)
+    puts "Decoding with secret: #{HMAC_SECRET}"  # Debugging statement
     body = JWT.decode(token, HMAC_SECRET).first
     HashWithIndifferentAccess.new(body)  # Return the decoded payload as a Hash
   end

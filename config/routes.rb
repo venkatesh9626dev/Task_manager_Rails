@@ -1,9 +1,7 @@
 Rails.application.routes.draw do
   
-  namespace :users do
-    post "/signin", to: "auth#sign_in"
-    post "/signout", to: "auth#sign_out"
-  end
+  post "/signin", to: "auth#sign_in", as: :login
+  post "/signout", to: "auth#sign_out"
 
 
   # Nested resources for employees and tasks under teams
@@ -14,6 +12,10 @@ Rails.application.routes.draw do
 
   resources :tasks do
     resources :comments
+  end
+
+  namespace :admin do
+    resources :users
   end
 
   resources :teams

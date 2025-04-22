@@ -6,13 +6,15 @@ class Admin::UsersController < ApplicationController
 
   def create
 
-    user_role = @current_user.role.upcase
+    user_role = @current_user.role
+
+
 
     if user_role != UsersEnum::RolesEnum::ADMIN
       @status = "Error"
       @message = "Admin can only create users"
       @data = nil
-      render json: "shared/response", status: :forbidden
+      render "shared/error_response", status: :forbidden
     
     else
       new_user_params = user_params
@@ -44,7 +46,7 @@ class Admin::UsersController < ApplicationController
     @status = "Success"
     @message = "Deleted user successfully"
 
-    render json: "users/destroy" , status: :ok
+    render  "users/destroy" , status: :ok
   end
 
   def user_params
