@@ -2,7 +2,7 @@ class UserMailer < ApplicationMailer
 
   include Rails.application.routes.url_helpers
 
-  default from: ENV["GMAIL_USERNAME"]  # Use your email address
+  default from: ENV["GMAIL_ADDRESS"]  # Use your email address
 
   def welcome_email(user,raw_password)
     @user = user

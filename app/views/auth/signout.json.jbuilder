@@ -1,2 +1,2 @@
-json.status @status
+json.status_message @status_message
 json.message @message

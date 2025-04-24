@@ -2,6 +2,9 @@ class ApplicationController < ActionController::API
 
     include ActionController::Cookies
 
+    #icluded this instance setter to set instance variables
+    include Shared::InstanceSetter
+
     before_action :authenticate_user
     # Active record validation error handling
 
@@ -11,23 +14,23 @@ class ApplicationController < ActionController::API
     rescue_from JWT::DecodeError, JWT::ExpiredSignature, JWT::ImmatureSignature, JWT::InvalidIssuerError, JWT::InvalidIatError, JWT::InvalidAudError, JWT::VerificationError, JWT::IncorrectAlgorithm, with: :handle_jwt_error
 
     def handle_record_invalid(exception)
-        @status = "Error"
+        @status_message = "Error"
         @message = "Record Invalid: #{exception.message}"
-        @data = nil
+
         render "shared/error_response", status: :unprocessable_entity
     end
 
     def record_not_found(exception)
-        @status = "Error"
+        @status_message = "Error"
         @message = "Record Not Found: #{exception.message}"
-        @data = nil
+
         render "shared/error_response", status: :not_found
     end
 
     def handle_jwt_error(exception)
-        @status = "Error"
+        @status_message = "Error"
         @message = "JWT Error: #{exception.message}"
-        @data = nil
+
         render "shared/error_response", status: :unauthorized
     end
 
@@ -47,11 +50,19 @@ class ApplicationController < ActionController::API
         end
     
         if not isAuthorized
-          @status = "Error"
+          @status_message = "Error"
           @message = "Invalid Token"
           @data = nil
           render "shared/error_response", status: :unauthorized
         end
          
+    end
+    
+    def status=(status)
+        @status_message = status
+    end
+
+    def message=(message)
+        @message = message
     end
 end
