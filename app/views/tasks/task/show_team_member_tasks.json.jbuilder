@@ -1,4 +1,4 @@
-json.status_message@status_message
+json.status_message @status_message
 json.message @message
 json.data @tasks do |task|
   json.task_name task.task_name

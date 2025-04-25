@@ -20,11 +20,11 @@ class Tasks::TasksController < ApplicationController
         task_params_hash = create_task_params
         @task = Task.create!(task_params_hash)
 
-        time_difference =(@task.due_time - Time.now).to_i / 60
+        time_difference = (@task.due_time - Time.now).to_i / 60
 
-
-        if time_difference >30 
-          TaskReminderJob.perform_at(@task.due_time - 30.minutes, @task.id)
+        task_url = Rails.application.routes.url_helpers.task_url(@task, host: request.host, protocol: request.protocol)
+        if time_difference > 30
+          TaskReminderWorker.perform_at(@task.due_time - 30.minutes, @task.id, task_url)
         end
         set_instance_variable(self, status_message: "Success", message: "Created task successfully")
         render "tasks/task/create", status: :created
@@ -38,7 +38,7 @@ class Tasks::TasksController < ApplicationController
   def show
     @task = Task.find(params[:id])
 
-    if [UsersEnum::RolesEnum::MANAGER,UsersEnum::RolesEnum::TEAM_MEMBER].include?(@current_user.role)
+    if [UsersEnum::RolesEnum::MANAGER,UsersEnum::RolesEnum::EMPLOYEE].include?(@current_user.role)
 
       set_instance_variable(self, status_message: "Success", message: "Fetched task successfully")
       render "tasks/task/show", status: :ok
@@ -87,7 +87,7 @@ class Tasks::TasksController < ApplicationController
     end
   end
 
-  def show_team_tasks
+  def index
     if UsersEnum::RolesEnum::MANAGER == @current_user.role
 
       @current_manager_team = Team.where(id: params[:team_id], user_id: @current_user.id).first

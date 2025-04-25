@@ -7,7 +7,7 @@ Rails.application.configure do
   config.enable_reloading = true
 
   # Do not eager load code on boot.
-  config.eager_load = false
+  config.eager_load = true
 
   config.action_dispatch.cookies_same_site_protection = :lax
 
@@ -49,11 +49,11 @@ Rails.application.configure do
     enable_starttls_auto: true
   }
 
-config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+config.action_mailer.default_url_options = { host: 'localhost', port: 3001 }
 
 
   # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  config.action_mailer.default_url_options = { host: "localhost", port: 3001 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
