@@ -52,10 +52,16 @@ class ApplicationController < ActionController::API
         if not isAuthorized
           @status_message = "Error"
           @message = "Invalid Token"
-          @data = nil
           render "shared/error_response", status: :unauthorized
         end
          
+    end
+
+    def validate_admin
+        if @current_user.role != UsersEnum::RolesEnum::ADMIN
+            set_instance_variable(self, status_message: "Error", message: "Admin can only view all users")
+            render "shared/error_response", status: :forbidden
+        end
     end
     
     def status=(status)
@@ -65,4 +71,5 @@ class ApplicationController < ActionController::API
     def message=(message)
         @message = message
     end
+
 end
