@@ -1,9 +1,12 @@
-json.status @status
+json.status_message@status_message
 json.message @message
-if @user
-  json.data do
-    json.username @user.username
-    json.email @user.email
-    json.role @user.role
+
+json.data do
+
+  json.username @user.username
+  json.email @user.email
+  json.role @user.role
+  json.links do
+    json.teams teams_path
   end
 end

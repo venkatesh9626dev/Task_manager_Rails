@@ -1,4 +1,4 @@
-json.status @status
+json.status_message@status_message
 json.message @message
 if @new_user
   json.data do

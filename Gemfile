@@ -50,4 +50,13 @@ gem "devise", "~> 4.9"
 
 gem "jwt", "~> 2.10"
 
+gem 'dotenv-rails', groups: [:development, :test]
+
 gem "rack-cors", "~> 2.0"
+
+# To manage background jobs
+gem 'sidekiq'
+
+# To manage background jobs with cron-like scheduling
+
+gem 'sidekiq-cron'

@@ -24,15 +24,13 @@ class AuthController < ApplicationController
             )
 
             
-            @status = "Success"
-            @message = "Signed in successfully"
+            set_instance_variable(self, status_message: "Success", message: "Signed in successfully")   
            
 
             render  "auth/signin", status: :ok
 
         else
-            @status = "Error"
-            @message = "Invalid email or password"
+            set_instance_variable(self, status_message: "Error", message: "Invalid email or password")
             render  "shared/error_response", status: :unauthorized
         end
         
@@ -40,10 +38,9 @@ class AuthController < ApplicationController
 
     def sign_out
         response.delete_cookie(:jwt, path: "/signin")
-        @status = "Success"
-        @message = "Signed out successfully"
+        set_instance_variable(self, status_message: "Success", message: "Signed out successfully")
 
-        render  "auth/signout", status: :no_content
+        render "auth/signout", status: :ok
     end
 
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_19_070613) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_24_041640) do
   create_table "comments", force: :cascade do |t|
     t.integer "team_member_id", null: false
     t.integer "task_id", null: false
@@ -21,25 +21,28 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_19_070613) do
     t.index ["team_member_id"], name: "index_comments_on_team_member_id"
   end
 
-  create_table "task_priorities", force: :cascade do |t|
-    t.integer "task_id", null: false
-    t.string "priority_category"
+  create_table "notifications", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "content"
+    t.string "resource_url"
+    t.boolean "read"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["task_id"], name: "index_task_priorities_on_task_id"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "tasks", force: :cascade do |t|
-    t.integer "employee_id", null: false
+    t.integer "team_member_id", null: false
     t.integer "team_id", null: false
-    t.string "task_name", null: false
-    t.text "task_description", null: false
-    t.datetime "due_time", null: false
-    t.string "status", null: false
+    t.string "task_name"
+    t.text "task_description"
+    t.string "task_priority"
+    t.datetime "due_time"
+    t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["employee_id"], name: "index_tasks_on_employee_id"
     t.index ["team_id"], name: "index_tasks_on_team_id"
+    t.index ["team_member_id"], name: "index_tasks_on_team_member_id"
   end
 
   create_table "team_members", force: :cascade do |t|
@@ -63,20 +66,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_19_070613) do
   create_table "users", force: :cascade do |t|
     t.string "username", null: false
     t.string "email", null: false
+    t.string "password_digest", null: false
     t.string "role"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "password_digest"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "comments", "tasks"
   add_foreign_key "comments", "team_members"
-  add_foreign_key "task_priorities", "tasks"
-  add_foreign_key "tasks", "employees"
-  add_foreign_key "tasks", "teams"
-  add_foreign_key "team_members", "teams"
+  add_foreign_key "notifications", "users"
+  add_foreign_key "tasks", "team_members"
+  add_foreign_key "tasks", "teams", on_delete: :cascade
+  add_foreign_key "team_members", "teams", on_delete: :cascade
   add_foreign_key "team_members", "users"
   add_foreign_key "teams", "users"
 end
