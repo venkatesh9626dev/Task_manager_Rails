@@ -2,6 +2,9 @@ class User < ApplicationRecord
 
     include UsersEnum::RolesEnum
 
+    has_many :teams, dependent: :destroy
+    has_many :team_members, dependent: :destroy
+    has_many :notifications, dependent: :destroy
     has_secure_password
 
     validates :username, presence: true, uniqueness: true, length: {minimum:3, maximum:30}
