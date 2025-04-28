@@ -9,17 +9,16 @@ Rails.application.routes.draw do
   resources :teams , module: :teams do
     resources :team_members,  shallow: true do
       member do
-        get :tasks, to: "tasks#show_team_member_tasks", as: :team_member_tasks
+        get :tasks, to: "/tasks/tasks#show_team_member_tasks", as: :team_member_tasks
       end
     end
 
-    scope module: nil do
-      resources :tasks , only: [:index, :create] 
-    end
+    get "/tasks", to: "/tasks/tasks#index", as: :team_tasks
+    post "/tasks", to: "/tasks/tasks#create"
   end
 
-  resources :tasks, module: :tasks, only: [:show, :destroy, :update] do
-    resources :comments, shallow:true
+  resources :tasks, module: :tasks, only: [:show, :destroy] do
+    resources :comments, shallow:true, only: [:create, :update, :destroy]
   end
 
   resources :users

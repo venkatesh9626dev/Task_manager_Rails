@@ -1,6 +1,6 @@
 class User < ApplicationRecord
 
-    include UsersEnum::RolesEnum
+
 
     has_many :teams, dependent: :destroy
     has_many :team_members, dependent: :destroy

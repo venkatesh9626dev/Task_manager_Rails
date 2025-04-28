@@ -2,10 +2,7 @@ require 'securerandom'
 
 class UsersController < ApplicationController
 
-  before_action :authenticate_user
   before_action :validate_admin, only: [ :create, :destroy]
-
-
 
   def index
     @users = User.all
@@ -16,6 +13,7 @@ class UsersController < ApplicationController
   def create
     new_user_params = user_params
     new_user_params[:password] = self.generate_random_password
+    puts "Password: #{new_user_params[:password]}"
     @new_user = User.new(new_user_params)
 
     if @new_user.invalid?
