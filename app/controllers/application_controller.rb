@@ -5,6 +5,8 @@ class ApplicationController < ActionController::API
     #icluded this instance setter to set instance variables
     include Shared::InstanceSetter
 
+    include UsersEnum::RolesEnum
+
     before_action :authenticate_user
     # Active record validation error handling
 
@@ -61,6 +63,13 @@ class ApplicationController < ActionController::API
         if @current_user.role != UsersEnum::RolesEnum::ADMIN
             set_instance_variable(self, status_message: "Error", message: "Admin can only view all users")
             render "shared/error_response", status: :forbidden
+        end
+    end
+
+    def validate_manager 
+        if @current_user.role != UsersEnum::RolesEnum::MANAGER
+            set_instance_variable(self, status_message: "Error", message: "Manager can only create teams")
+            render  "shared/error_response", status: :forbidden
         end
     end
     

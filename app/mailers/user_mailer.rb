@@ -7,7 +7,6 @@ class UserMailer < ApplicationMailer
   def welcome_email(user,raw_password)
     @user = user
     @raw_password  = raw_password
-    @login_url = login_url
     mail(to: @user.email, subject:'Welcome to Task Management App!')
   end
 end

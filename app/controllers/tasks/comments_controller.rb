@@ -27,28 +27,10 @@ class Tasks::CommentsController < ApplicationController
 
   def destroy
     @comment = Comment.find(params[:id])
-    if @comment.destroy
-      set_instance_variable(self, status_message: "Success", message: "Comment deleted successfully")
-      render "tasks/comment/destroy", status: :ok
-    else
-      set_instance_variable(self, status_message: "Error", message: "Failed to delete comment")
-      render "shared/error_response", status: :unprocessable_entity
-
-    end
+    
+    head :no_content
   end
-  
-  def show
-    @task = Task.find(params[:task_id])
-    @comments = @task.comments
 
-    if @comments.empty?
-      set_instance_variable(self, status_message: "Success", message: "No comments exist for this task")
-      render "tasks/comment/show", status: :ok
-    else
-      set_instance_variable(self, status_message: "Success", message: "Fetched all comments for task successfully")
-      render "tasks/comment/show", status: :ok
-    end
-  end
 
   def comment_params
     params.require(:comment).permit(:body)

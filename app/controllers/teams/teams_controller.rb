@@ -1,6 +1,6 @@
 class Teams::TeamsController < ApplicationController
 
-  include UsersEnum::RolesEnum
+  before_action :validate_manager, only: [:create, :update, :destroy]
 
   def index
     if @current_user.role == UsersEnum::RolesEnum::ADMIN
@@ -34,33 +34,20 @@ class Teams::TeamsController < ApplicationController
   end
 
   def create
-    if @current_user.role == UsersEnum::RolesEnum::MANAGER
-
-      create_team_params_hash = create_team_params
+      create_team_params_hash = team_params
       create_team_params_hash[:user_id] = @current_user.id
       @new_team = Team.create!(create_team_params_hash)
-      
-      @new_team.team_members.create!(user_id: @current_user.id)
      
       set_instance_variable(self, status_message: "Success", message: "Created team successfully")
       render  "teams/team/create", status: :created
-    else
-      set_instance_variable(self, status_message: "Error", message: "Manager can only create teams")
-      render  "shared/error_response", status: :forbidden
-    end
   end
 
   def update
-    if @current_user.role == UsersEnum::RolesEnum::MANAGER
-      @team = Team.find(params[:id])
-      @team.update!(update_team_params)
+    @team = Team.find(params[:id])
+    @team.update!(team_params)
 
-      set_instance_variable(self, status_message: "Success", message: "Updated team successfully")
-      render "teams/team/edit", status: :ok
-    else
-      set_instance_variable(self, status_message: "Error", message: "Manager can only edit teams")
-      render  "shared/error_response", status: :forbidden
-    end
+    set_instance_variable(self, status_message: "Success", message: "Updated team successfully")
+    render "teams/team/edit", status: :ok
   end
 
   def show
@@ -70,24 +57,16 @@ class Teams::TeamsController < ApplicationController
   end
 
   def destroy
-    if @current_user.role == UsersEnum::RolesEnum::MANAGER
-      team = Team.find(params[:id])
-      team.destroy
+    team = Team.find(params[:id])
+    team.destroy
 
-      set_instance_variable(self, status_message: "Success", message: "Deleted team successfully")
-    
-      render "teams/team/destroy", status: :ok
-    end
+    head :no_content
   end
 
 
   private
 
-  def create_team_params
-    params.require(:team).permit(:name,:about_team)
-  end
-
-  def update_team_params
+  def team_params
     params.require(:team).permit(:name,:about_team)
   end
 

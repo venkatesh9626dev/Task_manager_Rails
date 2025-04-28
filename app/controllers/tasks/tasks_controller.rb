@@ -1,72 +1,66 @@
 class Tasks::TasksController < ApplicationController
 
-  include UsersEnum::RolesEnum
+  before_action :validate_manager, only: [:create, :destroy, :show_team_member_tasks]
+  before_action :set_task_callback, only: [:destroy]
 
   def create
 
-    if @current_user.role == UsersEnum::RolesEnum::MANAGER
-      
-      @team_member = TeamMember.find(params[:task][:team_member_id])
+    @team = Team.find(params[:team_id])
 
-      @team = Team.find(params[:task][:team_id])
-
-      if @team.present? && @team.user_id != @current_user.id
-        set_instance_variable(self, status_message: "Error", message: "You are not authorized to create tasks for this team")
-        render "shared/error_response", status: :forbidden
-      end
-
-      if @team_member.present?
-      
-        task_params_hash = create_task_params
-        @task = Task.create!(task_params_hash)
-
-        time_difference = (@task.due_time - Time.now).to_i / 60
-
-        task_url = Rails.application.routes.url_helpers.task_url(@task, host: request.host, protocol: request.protocol)
-        if time_difference > 30
-          TaskReminderWorker.perform_at(@task.due_time - 30.minutes, @task.id, task_url)
-        end
-        set_instance_variable(self, status_message: "Success", message: "Created task successfully")
-        render "tasks/task/create", status: :created
-      end
-    else
-      set_instance_variable(self, status_message: "Error", message: "Manager can only create tasks")
+    if @team.present? && @team.user_id != @current_user.id
+      set_instance_variable(self, status_message: "Error", message: "You are not authorized to create tasks for this team")
       render "shared/error_response", status: :forbidden
+    end
+
+    @team_member = TeamMember.find(params[:task][:team_member_id])
+
+    if @team_member.present?
+    
+      task_params_hash = create_task_params
+      @task = Task.create!(task_params_hash)
+
+      time_difference = (@task.due_time - Time.now).to_i / 60
+
+      task_url = Rails.application.routes.url_helpers.task_url(@task, host: request.host, protocol: request.protocol)
+      if time_difference > 30
+        TaskReminderWorker.perform_at(@task.due_time - 30.minutes, @task.id, task_url)
+      end
+      set_instance_variable(self, status_message: "Success", message: "Created task successfully")
+      render "tasks/task/create", status: :created
     end
   end
 
   def show
-    @task = Task.find(params[:id])
+  
 
     if [UsersEnum::RolesEnum::MANAGER,UsersEnum::RolesEnum::EMPLOYEE].include?(@current_user.role)
+
+      @task = Task.find(params[:id])
 
       set_instance_variable(self, status_message: "Success", message: "Fetched task successfully")
       render "tasks/task/show", status: :ok
     else
       set_instance_variable(self, status_message: "Error", message: "You are not authorized to view this task")
-      render "shared/error_response", status: :not_found
-    end
-  end
-
-  def destroy
-    if @current_user.role == UsersEnum::RolesEnum::MANAGER
-      @task = Task.find(params[:id])
-      @task.destroy
-
-      set_instance_variable(self, status_message: "Success", message: "Deleted task successfully")
-      render "tasks/task/destroy", status: :ok
-    else
-      set_instance_variable(self, status_message: "Error", message: "Manager can only delete tasks")
       render "shared/error_response", status: :forbidden
     end
   end
 
-  def show_team_member_tasks
-    if UsersEnum::RolesEnum::MANAGER == @current_user.role
+  def destroy
+      @task.destroy
+      head :no_content
+  end
 
-      current_manager_team = Team.where(id: params[:team_id], user_id: @current_user.id).first
-      if current_manager_team
-        @team_member = TeamMember.find(params[:id])
+  def show_team_member_tasks
+
+ 
+      @team_member = TeamMember.find(params[:id])
+
+      if @team_member.team.user_id != @current_user.id
+        set_instance_variable(self, status_message: "Error", message: "You are not authorized to view this team member's tasks")
+        render "shared/error_response", status: :forbidden
+      
+      else
+
         @tasks = @team_member.tasks
 
         if @tasks.empty?
@@ -76,23 +70,15 @@ class Tasks::TasksController < ApplicationController
           set_instance_variable(self, status_message: "Success", message: "Fetched all tasks for team member successfully")
           render "tasks/task/show_team_member_tasks", status: :ok
         end
-      else
-        set_instance_variable(self, status_message: "Error", message: "You are not authorized to view this team member's tasks")
-        render "shared/error_response", status: :forbidden  
       end
-
-    else
-      set_instance_variable(self, status_message: "Error", message: "Team's Manager can only view team member tasks")
-      render "shared/error_response", status: :forbidden
-    end
   end
 
   def index
     if UsersEnum::RolesEnum::MANAGER == @current_user.role
 
-      @current_manager_team = Team.where(id: params[:team_id], user_id: @current_user.id).first
-      if @current_manager_team
-        @tasks = @current_manager_team.tasks
+      team = Team.where(id: params[:team_id]).first
+      if team
+        @tasks = team.tasks
         show_team_tasks_success_response(@tasks)
       else
         set_instance_variable(self, status_message: "Error", message: "You are not authorized to view this team's tasks")
@@ -109,9 +95,6 @@ class Tasks::TasksController < ApplicationController
         @tasks = @current_team_member.tasks
         show_team_tasks_success_response(@tasks)
       end
-    else
-      set_instance_variable(self, status_message: "Error", message: "You are not authorized to view this team's tasks")
-      render "shared/error_response", status: :forbidden
     end
   end
 
@@ -119,7 +102,6 @@ class Tasks::TasksController < ApplicationController
 
   def create_task_params
     params.require(:task).permit(
-      :team_id,
       :team_member_id,
       :task_name,
       :task_description,
@@ -137,5 +119,9 @@ class Tasks::TasksController < ApplicationController
       set_instance_variable(self, status_message: "Success", message: "Fetched all tasks for team successfully")
       render "tasks/task/show_team_tasks", status: :ok
     end
+  end
+
+  def set_task_callback
+    @task = Task.find(params[:id])
   end
 end
