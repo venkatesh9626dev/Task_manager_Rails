@@ -52,7 +52,7 @@ gem "jwt", "~> 2.10"
 
 gem 'dotenv-rails', groups: [:development, :test]
 
-gem "rack-cors", "~> 2.0"
+gem "rack-cors", "~> 3.0"
 
 # To manage background jobs
 gem 'sidekiq'
